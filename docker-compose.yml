@@ -1,0 +1,33 @@
+services:
+  db:
+    container_name: with-me-db
+    image: postgres:16-alpine
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    container_name: with-me-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    restart: always
+    # 로컬서버 포트와 다르게 설정
+    ports:
+      - '4001:4001'
+    env_file:
+      - .env
+    environment:
+      APP_PORT: 4001
+      DB_HOST: db
+
+volumes:
+  postgres_data:
